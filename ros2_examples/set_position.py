@@ -8,7 +8,7 @@ from std_msgs.msg import Float64
 """
 Set Power Example
 
-Used robot model: CompleteRobot
+Used robot model: EvalWheeledRoboterNoSensors
 """
 
 class SetPosition(DriveExampleNode):
@@ -23,12 +23,12 @@ class SetPosition(DriveExampleNode):
 
         self.pub_position_left = self.create_publisher(
             Float64, 
-            f"/CompleteRobot/{self.left_wheel_port}/setPosition", 
+            f"/{self.robot_name}/{self.left_wheel_port}/setPosition", 
             10
         )
         self.pub_position_right = self.create_publisher(
             Float64, 
-            f"/CompleteRobot/{self.right_wheel_port}/setPosition", 
+            f"/{self.robot_name}/{self.right_wheel_port}/setPosition", 
             10
         )
 

@@ -50,31 +50,33 @@ def generate_launch_description():
     arguments_dict = build_arguments_dict(args.arguments)
 
     example_name = arguments_dict["example"]
-
-    sys.argv.append("robot_name:=CompleteRobot")
+    robot_name = arguments_dict["robot_name"]
 
     if not example_name in AVAILABLE_EXAMPLES:
         print("Example not available")
         print("Available examples:", AVAILABLE_EXAMPLES)
         sys.exit(1)
 
-    webots_interface = get_package_share_directory("brickpi3_ros2")
+    launch_package = get_package_share_directory("lm_ros2_utils")
 
     return LaunchDescription(
         [
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(webots_interface, "launch", "launch.py")
+                    os.path.join(launch_package, "launch", "launch_simulation.py")
                 ),
                 launch_arguments={
-                    "robot_name": "CompleteRobot"
+                    "robot_name": robot_name
                 }.items()
             ),
             Node(
                 package="ros2_examples",
                 executable=example_name,
                 output="screen",
-                emulate_tty=True
+                emulate_tty=True,
+                parameters=[{
+                    "robot_name": robot_name
+                }]
             )
         ]
     )

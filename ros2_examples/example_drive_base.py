@@ -45,6 +45,9 @@ class DriveExampleNode(Node):
             self.stop
         ]
 
+        self.declare_parameter("robot_name")
+        self.robot_name = self.get_parameter("robot_name").get_parameter_value().string_value
+
         self.counter = 0
 
         self.timer_period = 2 # seconds

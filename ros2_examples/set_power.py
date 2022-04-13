@@ -2,7 +2,7 @@ import rclpy
 import random
 from ros2_examples.example_drive_base import DriveExampleNode
 
-from brickpi3_ros2.constants import Power
+from webots_ros2.constants import Power
 from std_msgs.msg import Int16
 
 """
@@ -23,23 +23,21 @@ class SetPowerExampleNode(DriveExampleNode):
 
         self.srv_left_wheel_vel = self.create_publisher(
             Int16, 
-            f"/CompleteRobot/{self.left_wheel_port}/setPower",
+            f"/{self.robot_name}/{self.left_wheel_port}/setPower",
             10
         )
         self.srv_right_wheel_vel = self.create_publisher(
             Int16, 
-            f"/CompleteRobot/{self.right_wheel_port}/setPower",
+            f"/{self.robot_name}/{self.right_wheel_port}/setPower",
             10
         )
 
     def get_random_movement_value(self):
-        return random.randint(1, Power.MAX)
+        return 50 # random.randint(1, Power.MAX)
 
     def send_new_movement(self, left_pow, right_pow):
         self.send_new_pow(left_pow, self.srv_left_wheel_vel)
-        print("AFTER LEFT")
         self.send_new_pow(right_pow, self.srv_right_wheel_vel)
-        print("AFTER RIGHT")
 
     def send_new_pow(self, data, pipe):
         req = Int16()
