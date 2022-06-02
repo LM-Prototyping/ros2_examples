@@ -32,15 +32,20 @@ class SetPosition(DriveExampleNode):
             10
         )
 
+        self.send = False
+
     def set_next_movement(self):
         angle = self.counter * (math.pi / 2)
 
         msg = Float64()
         msg.data = angle
 
-        self.pub_position_left.publish(msg)
-        self.pub_position_right.publish(msg)
+        if self.send:
 
+            self.pub_position_left.publish(msg)
+            self.pub_position_right.publish(msg)
+
+        self.send = not self.send
         self.counter += 1
 
 

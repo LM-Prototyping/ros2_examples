@@ -4,7 +4,7 @@ from ros2_examples.example_drive_base import DriveExampleNode
 
 from std_msgs.msg import Float32
 
-from brickpi3_ros2.constants import Velocity
+from webots_ros2.constants import Velocity
 
 """
 Set Velocity Example
@@ -26,12 +26,12 @@ class SetVelocityExampleNode(DriveExampleNode):
 
         self.pub_left_wheel_vel = self.create_publisher(
             Float32, 
-            f"/CompleteRobot/{self.left_wheel_port}/setVelocity",
+            f"/{self.robot_name}/{self.left_wheel_port}/setVelocity",
             10
         )
         self.pub_right_wheel_vel = self.create_publisher(
             Float32, 
-            f"/CompleteRobot/{self.right_wheel_port}/setVelocity",
+            f"/{self.robot_name}/{self.right_wheel_port}/setVelocity",
             10
         )
 

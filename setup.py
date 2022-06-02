@@ -1,13 +1,17 @@
 from setuptools import setup
 import os
 
+
+PATH = f"{os.getenv('LM_FRAMEWORK_PATH')}ros2Workspace/src/ros2_examples"
+
 package_name = 'ros2_examples'
 
 files_in_dir = (
     lambda dir: 
         [
             f"{dir}/{file}" for file in 
-            os.listdir(f"{os.getenv('LM_FRAMEWORK_PATH')}ros2Workspace/src/ros2_examples/{dir}")
+            os.listdir(f"{PATH}/{dir}")
+            if os.path.isfile(f"{PATH}/{dir}/{file}")
         ]
     )
 

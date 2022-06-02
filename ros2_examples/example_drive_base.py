@@ -1,5 +1,7 @@
 from rclpy.node import Node
 
+from std_msgs.msg import Empty
+
 """
 Set Power Example
 
@@ -28,13 +30,12 @@ class DriveExampleNode(Node):
                 """
             )
 
-        self.left_wheel_port = "PORT_A"
-        self.right_wheel_port = "PORT_B"
+        self.left_wheel_port = "PORT_B"
+        self.right_wheel_port = "PORT_A"
 
         self.movements = [
             self.forwards,
             self.left,
-            self.forwards,
             self.left,
             self.right,
             self.backwards,
@@ -50,43 +51,54 @@ class DriveExampleNode(Node):
 
         self.counter = 0
 
-        self.timer_period = 2 # seconds
-        self.timer = self.create_timer(self.timer_period, self.set_next_movement)
+        self.waiting = 0
+
+        self.should_send = False
+
+        self.create_subscription(Empty, "/webots/step", self.webots_step_callback, 10)
+
+    def webots_step_callback(self, _):
+        self.set_next_movement()
 
     def set_next_movement(self):
         random_value = self.get_random_movement_value()
 
-        print(f"{self.counter + 1} / {len(self.movements)}")
-        self.movements[self.counter](random_value)
+        self.waiting -= 1
 
-        self.counter = (self.counter + 1) % len(self.movements)
+        if self.should_send and self.waiting <= 0:
+            print(f"{self.counter + 1} / {len(self.movements)}")
+            self.movements[self.counter](random_value)
+            self.waiting = 100
+            self.counter = (self.counter + 1) % len(self.movements)
+
+        self.should_send = not self.should_send
 
     def get_random_movement_value(self):
         raise NotImplementedError()
 
     def forwards(self, value):
         print("Forwards\n")
-        # Left turns counter clockwise (forwards) -> positiv
-        # Right turns clockwise (forwards) -> negative
-        self.send_new_movement(value, -value)
+        # Left turns clockwise (forwards) -> positiv
+        # Right turns clockwise (forwards) -> positiv
+        self.send_new_movement(value, value)
 
     def left(self, value):
         print("Left\n")
-        # Left turns clockwise (backwards) -> negative
-        # Right turns clockwise (forwards) -> negative
-        self.send_new_movement(-value, -value)
+        # Left turns counter clockwise (backwards) -> negative
+        # Right turns clockwise (forwards) -> positive
+        self.send_new_movement(-value, value)
 
     def right(self, value):
         print("Right\n")
-        # Left turns counter clockwise (forwards) -> positiv
-        # Right turns counter clockwise (backwards) -> positiv
-        self.send_new_movement(value, value)
+        # Left turns clockwise (forwards) -> positiv
+        # Right turns counter clockwise (backwards) -> negative
+        self.send_new_movement(value, -value)
 
     def backwards(self, value):
         print("Backwards\n")
         # Left turns counter clockwise (backwards) -> negativ
-        # Right turns clockwise (backwards) -> positiv
-        self.send_new_movement(-value, value)
+        # Right turns counter clockwise (backwards) -> negative
+        self.send_new_movement(-value, -value)
 
     def stop(self, _):
         print("Stopping\n")
